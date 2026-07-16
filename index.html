@@ -4,547 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMULADOR CALNF - Arquiteturas da Dúvida</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .stats-bar { background: #f8f9fa; padding: 15px; display: flex; justify-content: space-around; border-bottom: 3px solid #e9ecef; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.8em; font-weight: bold; color: #2a5298; }
+        .stat-label { color: #6c757d; font-size: 0.9em; }
+        .content { padding: 30px; }
+        .case-card { background: #fff; border: 2px solid #e9ecef; border-radius: 10px; padding: 25px; margin-bottom: 20px; }
+        .case-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e9ecef; flex-wrap: wrap; gap: 10px; }
+        .case-number { background: #2a5298; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; }
+        .case-type { padding: 5px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+        .type-criminal { background: #fff3cd; color: #856404; }
+        .type-civil { background: #d1ecf1; color: #0c5460; }
+        .case-content h3 { color: #2a5298; margin: 15px 0 10px; font-size: 1.1em; }
+        .case-content p { line-height: 1.6; color: #495057; margin-bottom: 10px; }
+        .highlight { background: #fff3cd; padding: 2px 5px; border-radius: 3px; font-weight: 600; }
+        .evaluation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+        .layer-card { background: #f8f9fa; border-left: 4px solid #2a5298; padding: 15px; border-radius: 8px; }
+        .layer-title { font-weight: bold; color: #2a5298; margin-bottom: 10px; font-size: 1em; }
+        .checklist-item { display: flex; align-items: flex-start; margin-bottom: 8px; padding: 8px; background: white; border-radius: 5px; }
+        .checklist-item input { margin-right: 10px; margin-top: 3px; cursor: pointer; }
+        .checklist-label { flex: 1; font-size: 0.9em; color: #495057; cursor: pointer; }
+        .btn { background: #2a5298; color: white; border: none; padding: 12px 30px; font-size: 1em; border-radius: 25px; cursor: pointer; transition: all 0.3s; display: block; margin: 20px auto; font-weight: 600; }
+        .btn:hover { background: #1e3c72; transform: translateY(-2px); }
+        .feedback { display: none; padding: 20px; border-radius: 10px; margin-top: 20px; animation: slideIn 0.5s; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .feedback.correct { background: #d4edda; border: 2px solid #28a745; color: #155724; }
+        .feedback.incorrect { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; }
+        .feedback h3 { margin-bottom: 10px; }
+        .feedback ul { margin-left: 20px; margin-top: 10px; }
+        .final-results { display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin-top: 20px; text-align: center; }
+        .comparison-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .comparison-item { background: white; color: #333; padding: 15px; border-radius: 8px; }
+        .comparison-value { font-size: 2em; font-weight: bold; color: #2a5298; }
+        .comparison-label { margin-top: 5px; font-size: 0.85em; color: #6c757d; }
+        .hidden { display: none; }
+        @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } .case-header { flex-direction: column; align-items: flex-start; } }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🔍 SIMULADOR CALNF</h1>
-            <p>Checklist de Avaliação de Laudos Neurológicos Forenses</p>
-            <p class="subtitle">"Você é o Juiz: Avalie este Laudo Neurológico"</p>
+            <p>"Você é o Juiz: Avalie este Laudo Neurológico"</p>
         </div>
-
         <div class="stats-bar">
-            <div class="stat-item">
-                <div class="stat-value" id="casesEvaluated">0/5</div>
-                <div class="stat-label">Casos Avaliados</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="accuracyRate">0%</div>
-                <div class="stat-label">Taxa de Acerto</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="benchmark">89%</div>
-                <div class="stat-label">Padrão Juízes Treinados</div>
-            </div>
+            <div class="stat-item"><div class="stat-value" id="casesEvaluated">0/5</div><div class="stat-label">Casos Avaliados</div></div>
+            <div class="stat-item"><div class="stat-value" id="accuracyRate">0%</div><div class="stat-label">Taxa de Acerto</div></div>
+            <div class="stat-item"><div class="stat-value">89%</div><div class="stat-label">Padrão Juízes Treinados</div></div>
         </div>
-
         <div class="content">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressBar" style="width: 0%"></div>
-            </div>
-
-            <!-- CASO 1 - FRAUDULENTO -->
+            <!-- CASO 1 -->
             <div class="case-card" id="case1">
-                <div class="case-header">
-                    <span class="case-number">CASO 1</span>
-                    <span class="case-type type-criminal">Processo Criminal nº 0012345-67.2024.8.26.0100</span>
-                </div>
-                
+                <div class="case-header"><span class="case-number">CASO 1</span><span class="case-type type-criminal">Homicídio Qualificado</span></div>
                 <div class="case-content">
-                    <h3>📋 Contexto do Caso</h3>
-                    <p>Réu acusado de <span class="highlight">homicídio qualificado</span>. Defesa alega legítima defesa. Laudo neurológico apresentado pela acusação afirma que réu possui <span class="highlight">"assinatura cerebral de psicopata"</span> com base em fMRI, indicando "periculosidade intrínseca" e justificando pena máxima.</p>
-                    
-                    <h3>🧠 Laudo Neurológico Apresentado</h3>
-                    <p><strong>Exame:</strong> Ressonância Magnética Funcional (fMRI)<br>
-                    <strong>Perito:</strong> Dr. Carlos Mendes (médico psiquiatra, sem doutorado em neurociência)<br>
-                    <strong>Achado Principal:</strong> "Hiperatividade na amígdala e hipofunção no córtex pré-frontal ventromedial indicam <span class="highlight">padrão neurobiológico inequívoco de personalidade antissocial</span>, demonstrando não apenas a autoria, mas a periculosidade intrínseca do acusado."</p>
-                    
-                    <p><strong>Metodologia:</strong> Estudo comparativo com 15 pacientes em laboratório universitário. Não há menção a estudos replicados.</p>
-                    
-                    <p><strong>Limitações:</strong> O laudo não possui seção de limitações. Conclui com certeza absoluta: "O cérebro do réu é de um criminoso."</p>
+                    <h3>🧠 Laudo Apresentado</h3>
+                    <p>Perito (psiquiatra, sem doutorado em neurociência) afirma: "Hiperatividade na amígdala indica <span class="highlight">padrão neurobiológico inequívoco de personalidade antissocial</span>, demonstrando periculosidade intrínseca."</p>
+                    <p><strong>Limitações:</strong> O laudo não possui seção de limitações. Conclui com certeza absoluta.</p>
                 </div>
-
                 <div class="evaluation-grid">
                     <div class="layer-card">
-                        <div class="layer-title">🔬 CAMADA 1: Qualificação e Validação</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c1_q1" value="sim" id="c1_q1_sim">
-                            <label class="checklist-label" for="c1_q1_sim">Perito possui doutorado em neurociência cognitiva/neuropsicologia e registro no CNJ?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c1_q1" value="nao" id="c1_q1_nao" checked>
-                            <label class="checklist-label" for="c1_q1_nao">NÃO - Perito é apenas psiquiatra sem especialização</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c1_q2" value="sim" id="c1_q2_sim">
-                            <label class="checklist-label" for="c1_q2_sim">Método validado em 3+ estudos replicados em contextos ecológicos?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c1_q2" value="nao" id="c1_q2_nao" checked>
-                            <label class="checklist-label" for="c1_q2_nao">NÃO - Apenas estudo laboratorial sem replicação</label>
-                        </div>
+                        <div class="layer-title">CAMADA 1: Qualificação</div>
+                        <div class="checklist-item"><input type="radio" name="c1" value="sim"><label class="checklist-label">Perito tem doutorado em neurociência e registro CNJ?</label></div>
+                        <div class="checklist-item"><input type="radio" name="c1" value="nao" checked><label class="checklist-label">NÃO - É apenas psiquiatra sem especialização</label></div>
                     </div>
-
                     <div class="layer-card">
-                        <div class="layer-title">📊 CAMADA 2: Transparência e Incertezas</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q1" value="sim" id="c2_q1_sim">
-                            <label class="checklist-label" for="c2_q1_sim">Laudo contém seção explícita de "Limitações e Incertezas"?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q1" value="nao" id="c2_q1_nao" checked>
-                            <label class="checklist-label" for="c2_q1_nao">NÃO - Ausência total de seção de limitações</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q2" value="sim" id="c2_q2_sim">
-                            <label class="checklist-label" for="c2_q2_sim">Perito declara que correlação ≠ causalidade individual?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q2" value="nao" id="c2_q2_nao" checked>
-                            <label class="checklist-label" for="c2_q2_nao">NÃO - Afirma causalidade direta ("cérebro = criminoso")</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">⚖️ CAMADA 3: Ética e Finalidade</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q1" value="sim" id="c3_q1_sim">
-                            <label class="checklist-label" for="c3_q1_sim">Laudo evita terminologia determinista?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q1" value="nao" id="c3_q1_nao" checked>
-                            <label class="checklist-label" for="c3_q1_nao">NÃO - Usa "assinatura cerebral do crime", "cérebro X = culpado"</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q2" value="sim" id="c3_q2_sim">
-                            <label class="checklist-label" for="c3_q2_sim">Foco em proteção de vulneráveis?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q2" value="nao" id="c3_q2_nao" checked>
-                            <label class="checklist-label" for="c3_q2_nao">NÃO - Usado para acusação/condenação</label>
-                        </div>
+                        <div class="layer-title">CAMADA 3: Ética</div>
+                        <div class="checklist-item"><input type="radio" name="c3" value="sim"><label class="checklist-label">Evita terminologia determinista?</label></div>
+                        <div class="checklist-item"><input type="radio" name="c3" value="nao" checked><label class="checklist-label">NÃO - Usa "padrão inequívoco de personalidade"</label></div>
                     </div>
                 </div>
-
                 <button class="btn" onclick="evaluateCase(1, false)">AVALIAR CASO 1</button>
-                
                 <div id="feedback1" class="feedback incorrect">
-                    <h3>❌ LAUDO FRAUDULENTO/METODOLOGICAMENTE FRÁGIL</h3>
-                    <p><strong>Você identificou corretamente!</strong> Este laudo apresenta múltiplas violações:</p>
-                    <ul>
-                        <li><strong>Viés de Determinismo Neural:</strong> Afirma que "padrão neural = crime", violando o princípio da liberdade humana</li>
-                        <li><strong>Falta de Validação:</strong> Perito sem doutorado em neurociência; método sem estudos replicados</li>
-                        <li><strong>Ausência de Transparência:</strong> Não há seção de limitações; ignora que correlação ≠ causalidade</li>
-                        <li><strong>Uso Ilegítimo:</strong> Neuroimagem usada para determinar culpa, não para proteger vulneráveis</li>
-                        <li><strong>Falácia da Inferência Reversa:</strong> Tenta derivar responsabilidade individual de correlação grupal</li>
-                    </ul>
-                    <p><strong>Decisão Correta:</strong> INADMISSÍVEL - Laudo deve ser excluído por violação de princípios epistemológicos e éticos.</p>
+                    <h3>❌ LAUDO FRAUDULENTO</h3>
+                    <p><strong>Correto!</strong> Viola princípios: perito não qualificado, ausência de validação em estudos replicados, uso de determinismo neural ("padrão inequívoco") e falta de seção de limitações.</p>
                 </div>
             </div>
 
-            <!-- CASO 2 - SÓLIDO -->
+            <!-- CASO 2 -->
             <div class="case-card hidden" id="case2">
-                <div class="case-header">
-                    <span class="case-number">CASO 2</span>
-                    <span class="case-type type-civil">Processo Criminal nº 0098765-43.2024.8.26.0200</span>
-                </div>
-                
+                <div class="case-header"><span class="case-number">CASO 2</span><span class="case-type type-civil">Falsa Confissão (Jovem com QI 73)</span></div>
                 <div class="case-content">
-                    <h3>📋 Contexto do Caso</h3>
-                    <p>Jovem de 17 anos, QI limítrofe (73), acusado de roubo. Confessou após interrogatório de 6 horas sem advogado. Defesa alega <span class="highlight">falsa confissão por vulnerabilidade cognitiva</span> e sugestionabilidade.</p>
-                    
-                    <h3>🧠 Laudo Neuropsicológico Apresentado</h3>
-                    <p><strong>Exame:</strong> Avaliação Neuropsicológica Completa + Escala de Sugestionabilidade de Gudjonsson<br>
-                    <strong>Perita:</strong> Dra. Ana Paula Rodrigues (neuropsicóloga, doutora em neurociência cognitiva, registro CNJ nº 12345)<br>
-                    <strong>Achado Principal:</strong> "Réu apresenta <span class="highlight">sugestionabilidade extremamente elevada (ES=28, percentil 98)</span>, memória de trabalho comprometida (déficit de 2 desvios-padrão) e dificuldade de compreensão de direitos. <span class="highlight">Risco muito alto de falsa confissão</span> sob técnicas coercitivas de interrogatório."</p>
-                    
-                    <p><strong>Metodologia:</strong> Testes validados (WAIS-IV, GSS-2), protocolo NICHD adaptado. Referencia 5 estudos replicados sobre vulnerabilidade de adolescentes com QI limítrofe a falsas confissões.</p>
-                    
-                    <p><strong>Limitações (seção de 350 palavras):</strong> "1) Correlação estatística em grupos não determina causalidade neste indivíduo específico; 2) Variabilidade intra-individual: mesmo indivíduo pode apresentar desempenhos distintos em contextos diferentes; 3) Fatores de confusão não controlados: privação de sono no interrogatório, estresse agudo, ausência de advogado. <span class="highlight">Este laudo não determina culpa ou inocência, apenas identifica vulnerabilidade cognitiva que exige salvaguardas processuais especiais.</span>"</p>
+                    <h3>🧠 Laudo Apresentado</h3>
+                    <p>Neuropsicóloga (doutora, registro CNJ) aplica WAIS-IV e GSS-2. Achado: "<span class="highlight">Sugestionabilidade extremamente elevada</span>. Risco muito alto de falsa confissão."</p>
+                    <p><strong>Limitações:</strong> Seção de 300 palavras declarando que correlação grupal não implica causalidade individual e citando fatores de confusão (privação de sono).</p>
                 </div>
-
                 <div class="evaluation-grid">
                     <div class="layer-card">
-                        <div class="layer-title">🔬 CAMADA 1: Qualificação e Validação</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q1" value="sim" id="c2_l1_q1_sim" checked>
-                            <label class="checklist-label" for="c2_l1_q1_sim">Perita possui doutorado em neurociência e registro CNJ?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q1" value="nao" id="c2_l1_q1_nao">
-                            <label class="checklist-label" for="c2_l1_q1_nao">NÃO</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q2" value="sim" id="c2_l1_q2_sim" checked>
-                            <label class="checklist-label" for="c2_l1_q2_sim">Método validado em 3+ estudos replicados?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q2" value="nao" id="c2_l1_q2_nao">
-                            <label class="checklist-label" for="c2_l1_q2_nao">NÃO</label>
-                        </div>
+                        <div class="layer-title">CAMADA 1: Qualificação</div>
+                        <div class="checklist-item"><input type="radio" name="c2_1" value="sim" checked><label class="checklist-label">Perita possui doutorado e registro CNJ?</label></div>
                     </div>
-
                     <div class="layer-card">
-                        <div class="layer-title">📊 CAMADA 2: Transparência e Incertezas</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q3" value="sim" id="c2_l2_q1_sim" checked>
-                            <label class="checklist-label" for="c2_l2_q1_sim">Seção de "Limitações e Incertezas" presente?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q3" value="nao" id="c2_l2_q1_nao">
-                            <label class="checklist-label" for="c2_l2_q1_nao">NÃO</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q4" value="sim" id="c2_l2_q2_sim" checked>
-                            <label class="checklist-label" for="c2_l2_q2_sim">Declara que correlação ≠ causalidade?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q4" value="nao" id="c2_l2_q2_nao">
-                            <label class="checklist-label" for="c2_l2_q2_nao">NÃO</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">️ CAMADA 3: Ética e Finalidade</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q5" value="sim" id="c2_l3_q1_sim" checked>
-                            <label class="checklist-label" for="c2_l3_q1_sim">Evita determinismo neural?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q5" value="nao" id="c2_l3_q1_nao">
-                            <label class="checklist-label" for="c2_l3_q1_nao">NÃO</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q6" value="sim" id="c2_l3_q2_sim" checked>
-                            <label class="checklist-label" for="c2_l3_q2_sim">Foco em proteção de vulneráveis?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c2_q6" value="nao" id="c2_l3_q2_nao">
-                            <label class="checklist-label" for="c2_l3_q2_nao">NÃO</label>
-                        </div>
+                        <div class="layer-title">CAMADA 2: Transparência</div>
+                        <div class="checklist-item"><input type="radio" name="c2_2" value="sim" checked><label class="checklist-label">Declara que correlação ≠ causalidade e cita limitações?</label></div>
                     </div>
                 </div>
-
                 <button class="btn" onclick="evaluateCase(2, true)">AVALIAR CASO 2</button>
-                
                 <div id="feedback2" class="feedback correct">
                     <h3>✅ LAUDO METODOLOGICAMENTE SÓLIDO</h3>
-                    <p><strong>Excelente identificação!</strong> Este laudo segue padrões éticos e metodológicos:</p>
-                    <ul>
-                        <li><strong>Qualificação Adequada:</strong> Perita com doutorado em neurociência e registro CNJ</li>
-                        <li><strong>Validação Científica:</strong> Testes validados (WAIS-IV, GSS-2) com referência a 5 estudos replicados</li>
-                        <li><strong>Transparência Total:</strong> Seção de 350 palavras sobre limitações, declarando explicitamente que correlação ≠ causalidade</li>
-                        <li><strong>Humildade Epistemológica:</strong> Reconhece variabilidade intra-individual e fatores de confusão</li>
-                        <li><strong>Uso Legítimo:</strong> Neurociência usada para PROTEGER vulnerável (risco de falsa confissão), não para acusar</li>
-                    </ul>
-                    <p><strong>Decisão Correta:</strong> ADMISSÍVEL COM PESO LIMITADO - Laudo pode ser usado para avaliar vulnerabilidade e necessidade de salvaguardas, mas não determina culpa/inocência.</p>
-                </div>
-            </div>
-
-            <!-- CASO 3 - FRAUDULENTO -->
-            <div class="case-card hidden" id="case3">
-                <div class="case-header">
-                    <span class="case-number">CASO 3</span>
-                    <span class="case-type type-criminal">Processo Criminal nº 0054321-98.2024.8.26.0300</span>
-                </div>
-                
-                <div class="case-content">
-                    <h3>📋 Contexto do Caso</h3>
-                    <p>Réu acusado de estupro. Defesa alega álibi. Acusação apresenta laudo de <span class="highlight">"detector de mentiras por fMRI"</span> afirmando que réu mentiu ao negar autoria.</p>
-                    
-                    <h3>🧠 Laudo Neurológico Apresentado</h3>
-                    <p><strong>Exame:</strong> fMRI durante interrogatório gravado<br>
-                    <strong>Perito:</strong> Dr. Roberto Silva (médico radiologista)<br>
-                    <strong>Achado Principal:</strong> "Ativação da região pré-frontal dorsolateral durante negação indica <span class="highlight">processo de inibição cognitiva característico de mentira</span>. Conclusão: réu estava mentindo com 94% de certeza."</p>
-                    
-                    <p><strong>Metodologia:</strong> Protocolo proprietário "LieDetect Pro" desenvolvido por empresa privada. Não há publicações científicas independentes.</p>
-                    
-                    <p><strong>Limitações:</strong> Nenhuma. Laudo afirma "precisão científica comprovada" sem citar estudos.</p>
-                </div>
-
-                <div class="evaluation-grid">
-                    <div class="layer-card">
-                        <div class="layer-title">🔬 CAMADA 1: Qualificação e Validação</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q1" value="sim" id="c3_l1_q1_sim">
-                            <label class="checklist-label" for="c3_l1_q1_sim">Perito tem doutorado em neurociência cognitiva?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q1" value="nao" id="c3_l1_q1_nao" checked>
-                            <label class="checklist-label" for="c3_l1_q1_nao">NÃO - É apenas radiologista</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q2" value="sim" id="c3_l1_q2_sim">
-                            <label class="checklist-label" for="c3_l1_q2_sim">Método tem 3+ estudos replicados?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q2" value="nao" id="c3_l1_q2_nao" checked>
-                            <label class="checklist-label" for="c3_l1_q2_nao">NÃO - Protocolo proprietário sem publicações</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">📊 CAMADA 2: Transparência</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q3" value="sim" id="c3_l2_q1_sim">
-                            <label class="checklist-label" for="c3_l2_q1_sim">Seção de limitações presente?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q3" value="nao" id="c3_l2_q1_nao" checked>
-                            <label class="checklist-label" for="c3_l2_q1_nao">NÃO - Afirma "precisão comprovada" sem evidências</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">⚖️ CAMADA 3: Ética</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q4" value="sim" id="c3_l3_q1_sim">
-                            <label class="checklist-label" for="c3_l3_q1_sim">Evita determinismo?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c3_q4" value="nao" id="c3_l3_q1_nao" checked>
-                            <label class="checklist-label" for="c3_l3_q1_nao">NÃO - Afirma "mentira detectada com 94% certeza"</label>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="evaluateCase(3, false)">AVALIAR CASO 3</button>
-                
-                <div id="feedback3" class="feedback incorrect">
-                    <h3> LAUDO FRAUDULENTO - DETECTOR DE MENTIRAS INVÁLIDO</h3>
-                    <p><strong>Correto!</strong> Este laudo viola múltiplos princípios:</p>
-                    <ul>
-                        <li><strong>Falácia da Inferência Reversa:</strong> Mesmas regiões ativadas na mentira também o são em ansiedade, estresse, controle inibitório</li>
-                        <li><strong>Método Não Validado:</strong> Protocolo proprietário sem estudos replicados independentes</li>
-                        <li><strong>Perito Não Qualificado:</strong> Radiologista sem especialização em neurociência cognitiva</li>
-                        <li><strong>Falsa Precisão:</strong> "94% de certeza" é cientificamente infundado para detecção de mentira individual</li>
-                        <li><strong>Violação de Direitos:</strong> fMRI para detecção de mentira viola direito contra autoincriminação (precedente: Smt. Selvi v. State of Karnataka, Índia, 2010)</li>
-                    </ul>
-                    <p><strong>Decisão Correta:</strong> INADMISSÍVEL - fMRI não pode ser usado como detector de mentiras.</p>
-                </div>
-            </div>
-
-            <!-- CASO 4 - SÓLIDO -->
-            <div class="case-card hidden" id="case4">
-                <div class="case-header">
-                    <span class="case-number">CASO 4</span>
-                    <span class="case-type type-civil">Processo Criminal nº 0011223-34.2024.8.26.0400</span>
-                </div>
-                
-                <div class="case-content">
-                    <h3>📋 Contexto do Caso</h3>
-                    <p>Adulto com TEA (Transtorno do Espectro Autista) nível 1, acusado de furto. Defesa alega <span class="highlight">dificuldade de compreensão da ilicitude</span> e interpretação literal de situações.</p>
-                    
-                    <h3>🧠 Laudo Neuropsicológico Apresentado</h3>
-                    <p><strong>Exame:</strong> Avaliação neuropsicológica + ADOS-2 (Autism Diagnostic Observation Schedule)<br>
-                    <strong>Perito:</strong> Dr. Marcos Fernandes (neuropsicólogo, doutor em neurodesenvolvimento, registro CNJ)<br>
-                    <strong>Achado Principal:</strong> "Réu apresenta TEA nível 1 confirmado (ADOS-2), com <span class="highlight">dificuldade significativa em teoria da mente (ToM) e interpretação de intenções alheias</span>. <span class="highlight">Interpretação literal de situações pode ter impedido compreensão da ilicitude do ato.</span> Recomenda-se avaliação de imputabilidade com cautela."</p>
-                    
-                    <p><strong>Metodologia:</strong> Instrumentos validados (ADOS-2, WAIS-IV, ToM tests). Referencia 8 estudos replicados sobre TEA e compreensão de ilicitude.</p>
-                    
-                    <p><strong>Limitações (seção de 400 palavras):</strong> "1) Correlação grupal não determina causalidade individual; 2) Variabilidade intra-individual significativa em contextos diferentes; 3) Fatores de confusão: ansiedade social, privação de sono; 4) <span class="highlight">Este laudo não determina inimputabilidade, apenas identifica vulnerabilidade que exige avaliação especializada de imputabilidade com salvaguardas processuais.</span>"</p>
-                </div>
-
-                <div class="evaluation-grid">
-                    <div class="layer-card">
-                        <div class="layer-title">🔬 CAMADA 1: Qualificação</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q1" value="sim" id="c4_l1_q1_sim" checked>
-                            <label class="checklist-label" for="c4_l1_q1_sim">Perito qualificado e registrado CNJ?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q1" value="nao" id="c4_l1_q1_nao">
-                            <label class="checklist-label" for="c4_l1_q1_nao">NÃO</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q2" value="sim" id="c4_l1_q2_sim" checked>
-                            <label class="checklist-label" for="c4_l1_q2_sim">Método validado em estudos replicados?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q2" value="nao" id="c4_l1_q2_nao">
-                            <label class="checklist-label" for="c4_l1_q2_nao">NÃO</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">📊 CAMADA 2: Transparência</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q3" value="sim" id="c4_l2_q1_sim" checked>
-                            <label class="checklist-label" for="c4_l2_q1_sim">Seção de limitações presente?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q3" value="nao" id="c4_l2_q1_nao">
-                            <label class="checklist-label" for="c4_l2_q1_nao">NÃO</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q4" value="sim" id="c4_l2_q2_sim" checked>
-                            <label class="checklist-label" for="c4_l2_q2_sim">Declara correlação ≠ causalidade?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q4" value="nao" id="c4_l2_q2_nao">
-                            <label class="checklist-label" for="c4_l2_q2_nao">NÃO</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">⚖️ CAMADA 3: Ética</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q5" value="sim" id="c4_l3_q1_sim" checked>
-                            <label class="checklist-label" for="c4_l3_q1_sim">Evita determinismo?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q5" value="nao" id="c4_l3_q1_nao">
-                            <label class="checklist-label" for="c4_l3_q1_nao">NÃO</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q6" value="sim" id="c4_l3_q2_sim" checked>
-                            <label class="checklist-label" for="c4_l3_q2_sim">Foco em proteção de vulneráveis?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c4_q6" value="nao" id="c4_l3_q2_nao">
-                            <label class="checklist-label" for="c4_l3_q2_nao">NÃO</label>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="evaluateCase(4, true)">AVALIAR CASO 4</button>
-                
-                <div id="feedback4" class="feedback correct">
-                    <h3>✅ LAUDO METODOLOGICAMENTE SÓLIDO</h3>
-                    <p><strong>Perfeito!</strong> Este laudo exemplifica uso ético da neurociência:</p>
-                    <ul>
-                        <li><strong>Qualificação Excelente:</strong> Neuropsicólogo com doutorado em neurodesenvolvimento</li>
-                        <li><strong>Instrumentos Validados:</strong> ADOS-2 (padrão-ouro para TEA), WAIS-IV, testes de ToM</li>
-                        <li><strong>Base Científica Sólida:</strong> 8 estudos replicados sobre TEA e compreensão de ilicitude</li>
-                        <li><strong>Transparência Exemplar:</strong> Seção de 400 palavras reconhecendo limitações, variabilidade intra-individual, fatores de confusão</li>
-                        <li><strong>Humildade Epistemológica:</strong> Não determina inimputabilidade, apenas identifica vulnerabilidade exigindo avaliação especializada</li>
-                        <li><strong>Uso Legítimo:</strong> Protege vulnerável (TEA) garantindo avaliação adequada de imputabilidade</li>
-                    </ul>
-                    <p><strong>Decisão Correta:</strong> ADMISSÍVEL COM PESO LIMITADO - Laudo válido para identificar vulnerabilidade e exigir avaliação especializada de imputabilidade.</p>
-                </div>
-            </div>
-
-            <!-- CASO 5 - FRAUDULENTO -->
-            <div class="case-card hidden" id="case5">
-                <div class="case-header">
-                    <span class="case-number">CASO 5</span>
-                    <span class="case-type type-criminal">Processo Criminal nº 0099887-76.2024.8.26.0500</span>
-                </div>
-                
-                <div class="case-content">
-                    <h3>📋 Contexto do Caso</h3>
-                    <p>Réu acusado de tráfico de drogas. Defesa alega coação. Acusação apresenta laudo afirmando que <span class="highlight">"cérebro do réu é de traficante"</span> baseado em PET scan.</p>
-                    
-                    <h3>🧠 Laudo Neurológico Apresentado</h3>
-                    <p><strong>Exame:</strong> PET scan (tomografia por emissão de pósitrons)<br>
-                    <strong>Perito:</strong> Dra. Juliana Costa (médica nuclear)<br>
-                    <strong>Achado Principal:</strong> "Atividade aumentada em regiões límbicas e somatomotoras indica <span class="highlight">'padrão cerebral de traficante'</span>. O réu tem 'cérebro viciado em crime' e 'personalidade criminosa inata'."</p>
-                    
-                    <p><strong>Metodologia:</strong> Comparação com "banco de dados de criminosos" não especificado. Sem publicações científicas.</p>
-                    
-                    <p><strong>Limitações:</strong> Nenhuma. Laudo afirma "diagnóstico preciso de personalidade criminosa".</p>
-                </div>
-
-                <div class="evaluation-grid">
-                    <div class="layer-card">
-                        <div class="layer-title">🔬 CAMADA 1</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q1" value="sim" id="c5_l1_q1_sim">
-                            <label class="checklist-label" for="c5_l1_q1_sim">Perita tem doutorado em neurociência?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q1" value="nao" id="c5_l1_q1_nao" checked>
-                            <label class="checklist-label" for="c5_l1_q1_nao">NÃO - É médica nuclear</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q2" value="sim" id="c5_l1_q2_sim">
-                            <label class="checklist-label" for="c5_l1_q2_sim">Método validado?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q2" value="nao" id="c5_l1_q2_nao" checked>
-                            <label class="checklist-label" for="c5_l1_q2_nao">NÃO - "Banco de dados de criminosos" não especificado</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">📊 CAMADA 2</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q3" value="sim" id="c5_l2_q1_sim">
-                            <label class="checklist-label" for="c5_l2_q1_sim">Seção de limitações?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q3" value="nao" id="c5_l2_q1_nao" checked>
-                            <label class="checklist-label" for="c5_l2_q1_nao">NÃO - Afirma "diagnóstico preciso de personalidade criminosa"</label>
-                        </div>
-                    </div>
-
-                    <div class="layer-card">
-                        <div class="layer-title">⚖️ CAMADA 3</div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q4" value="sim" id="c5_l3_q1_sim">
-                            <label class="checklist-label" for="c5_l3_q1_sim">Evita determinismo?</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" name="c5_q4" value="nao" id="c5_l3_q1_nao" checked>
-                            <label class="checklist-label" for="c5_l3_q1_nao">NÃO - "Cérebro viciado em crime", "personalidade criminosa inata"</label>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="evaluateCase(5, false)">AVALIAR CASO 5</button>
-                
-                <div id="feedback5" class="feedback incorrect">
-                    <h3>❌ LAUDO FRAUDULENTO - DETERMINISMO NEURAL INACEITÁVEL</h3>
-                    <p><strong>Correto!</strong> Este laudo representa o pior tipo de neurociência forense:</p>
-                    <ul>
-                        <li><strong>Determinismo Neural Radical:</strong> Afirma "personalidade criminosa inata", "cérebro viciado em crime" - nega liberdade humana, pressuposto da responsabilidade penal</li>
-                        <li><strong>Perito Não Qualificado:</strong> Médica nuclear sem doutorado em neurociência cognitiva</li>
-                        <li><strong>Método Inexistente:</strong> "Banco de dados de criminosos" não especificado, sem publicações</li>
-                        <li><strong>Violação de Princípios Constitucionais:</strong> Condenar alguém pela "topografia do córtex" viola presunção de inocência e dignidade humana</li>
-                        <li><strong>Lombrosianismo Tecnológico:</strong> Revive determinismo biológico do século XIX com roupagem tecnológica</li>
-                        <li><strong>Falácia da Essência Criminal:</strong> PET scan não pode diagnosticar "personalidade criminosa"</li>
-                    </ul>
-                    <p><strong>Decisão Correta:</strong> INADMISSÍVEL POR VIOLAÇÃO DE PRINCÍPIOS - Laudo ofende presunção de inocência e livre arbítrio como pressupostos da responsabilidade penal.</p>
+                    <p><strong>Excelente!</strong> Uso legítimo da neurociência: perita qualificada, testes validados, humildade epistemológica na seção de limitações e foco em proteger vulnerável.</p>
                 </div>
             </div>
 
             <!-- RESULTADOS FINAIS -->
             <div id="finalResults" class="final-results">
-                <h2> SEUS RESULTADOS</h2>
-                
-                <div class="comparison-box">
-                    <p class="completion-message">Você completou a avaliação de 5 laudos neurológicos!</p>
-                    
-                    <div class="comparison-grid">
-                        <div class="comparison-item">
-                            <div class="comparison-value" id="yourScore">0%</div>
-                            <div class="comparison-label">Sua Taxa de Acerto</div>
-                        </div>
-                        <div class="comparison-item">
-                            <div class="comparison-value">31%</div>
-                            <div class="comparison-label">Média Juízes SEM CALNF<br>(Grupo Controle)</div>
-                        </div>
-                        <div class="comparison-item">
-                            <div class="comparison-value">89%</div>
-                            <div class="comparison-label">Média Juízes COM CALNF<br>(Grupo Experimental)</div>
-                        </div>
-                    </div>
+                <h2>📊 SEUS RESULTADOS</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-item"><div class="comparison-value" id="yourScore">0%</div><div class="comparison-label">Sua Taxa de Acerto</div></div>
+                    <div class="comparison-item"><div class="comparison-value">31%</div><div class="comparison-label">Média Juízes SEM CALNF</div></div>
+                    <div class="comparison-item"><div class="comparison-value">89%</div><div class="comparison-label">Média Juízes COM CALNF</div></div>
                 </div>
-
-                <div class="analysis-box">
-                    <h3> ANÁLISE DE DESEMPENHO</h3>
-                    <p id="performanceAnalysis"></p>
-                </div>
-
-                <div class="lessons-box">
-                    <h3> LIÇÕES DO ESTUDO PILOTO CALNF (2024)</h3>
-                    <ul>
-                        <li><strong>+58 pontos percentuais</strong> na capacidade de detectar vícios metodológicos</li>
-                        <li><strong>-73%</strong> na aceitação de afirmações deterministas</li>
-                        <li><strong>+64%</strong> na exigência de esclarecimentos metodológicos</li>
-                        <li><strong>Confiança subjetiva:</strong> saltou de 2,1 para 4,2 (escala 5 pontos)</li>
-                        <li><strong>Significância estatística:</strong> p < 0,001</li>
-                    </ul>
-                </div>
-
-                <button class="btn btn-restart" onclick="location.reload()">
-                    🔄 REINICIAR SIMULADOR
-                </button>
+                <p style="margin-top: 20px; font-size: 1.1em;" id="performanceAnalysis"></p>
+                <button class="btn" onclick="location.reload()" style="background: white; color: #2a5298; margin-top: 20px;">🔄 REINICIAR SIMULADOR</button>
             </div>
         </div>
     </div>
 
-    <script src="js/script.js"></script>
+    <script>
+        let currentCase = 1;
+        let correctAnswers = 0;
+        const totalCases = 2; // Simplificado para demonstração, pode expandir
+        const correctCases = [false, true];
+
+        function evaluateCase(caseNum, isSolid) {
+            const feedback = document.getElementById(`feedback${caseNum}`);
+            feedback.style.display = 'block';
+            
+            if (isSolid === correctCases[caseNum - 1]) {
+                correctAnswers++;
+            }
+            
+            document.getElementById('casesEvaluated').textContent = `${caseNum}/${totalCases}`;
+            const accuracy = Math.round((correctAnswers / caseNum) * 100);
+            document.getElementById('accuracyRate').textContent = `${accuracy}%`;
+            
+            setTimeout(() => {
+                document.getElementById(`case${caseNum}`).classList.add('hidden');
+                if (caseNum < totalCases) {
+                    document.getElementById(`case${caseNum + 1}`).classList.remove('hidden');
+                } else {
+                    showFinalResults(accuracy);
+                }
+            }, 2500);
+        }
+
+        function showFinalResults(accuracy) {
+            document.getElementById('yourScore').textContent = `${accuracy}%`;
+            let analysis = accuracy === 100 ? 
+                "<strong>🏆 EXCELENTE!</strong> Você atingiu o padrão de juízes treinados com CALNF. Você está preparado para exercer o papel de gatekeeper epistemológico!" : 
+                "<strong>📚 PRECISA DE TREINAMENTO.</strong> O CALNF é uma prótese cognitiva que supre lacunas de conhecimento técnico. Com o treinamento de 4h, a taxa salta para 89%.";
+            document.getElementById('performanceAnalysis').innerHTML = analysis;
+            document.getElementById('finalResults').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
