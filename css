@@ -1,0 +1,461 @@
+/* ============================================
+   SIMULADOR CALNF - ARQUITETURAS DA DÚVIDA
+   Estilos Principais
+   ============================================ */
+
+/* Reset e Configurações Globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Container Principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 1.2em;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.header .subtitle {
+    font-size: 1em;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+/* Barra de Estatísticas */
+.stats-bar {
+    background: #f8f9fa;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 3px solid #e9ecef;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    min-width: 150px;
+}
+
+.stat-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: #2a5298;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+/* Conteúdo Principal */
+.content {
+    padding: 40px;
+}
+
+/* Barra de Progresso */
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #e9ecef;
+    border-radius: 5px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745, #20c997);
+    transition: width 0.5s ease;
+}
+
+/* Cards de Caso */
+.case-card {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+}
+
+.case-card:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.case-number {
+    background: #2a5298;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.case-type {
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.type-criminal {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.type-civil {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+/* Conteúdo do Caso */
+.case-content {
+    margin-bottom: 25px;
+}
+
+.case-content h3 {
+    color: #2a5298;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    margin-top: 20px;
+}
+
+.case-content h3:first-child {
+    margin-top: 0;
+}
+
+.case-content p {
+    line-height: 1.8;
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+.highlight {
+    background: #fff3cd;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* Grid de Avaliação */
+.evaluation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.layer-card {
+    background: #f8f9fa;
+    border-left: 4px solid #2a5298;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.layer-title {
+    font-weight: bold;
+    color: #2a5298;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.checklist-item:hover {
+    background: #e9ecef;
+}
+
+.checklist-item input[type="radio"] {
+    margin-right: 10px;
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+.checklist-label {
+    flex: 1;
+    font-size: 0.95em;
+    color: #495057;
+    cursor: pointer;
+}
+
+/* Botões */
+.btn {
+    background: #2a5298;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 30px auto;
+    font-weight: 600;
+}
+
+.btn:hover {
+    background: #1e3c72;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(42, 82, 152, 0.4);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-restart {
+    background: white;
+    color: #2a5298;
+    border: 2px solid #2a5298;
+}
+
+.btn-restart:hover {
+    background: #2a5298;
+    color: white;
+}
+
+/* Feedback */
+.feedback {
+    display: none;
+    padding: 30px;
+    border-radius: 10px;
+    margin-top: 20px;
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback.correct {
+    background: #d4edda;
+    border: 2px solid #28a745;
+    color: #155724;
+}
+
+.feedback.incorrect {
+    background: #f8d7da;
+    border: 2px solid #dc3545;
+    color: #721c24;
+}
+
+.feedback h3 {
+    margin-bottom: 15px;
+    font-size: 1.4em;
+}
+
+.feedback ul {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.feedback li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+/* Resultados Finais */
+.final-results {
+    display: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.final-results h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.comparison-box {
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.completion-message {
+    font-size: 1.3em;
+    margin-bottom: 20px;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.comparison-item {
+    background: white;
+    color: #333;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.comparison-value {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #2a5298;
+}
+
+.comparison-label {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+.analysis-box, .lessons-box {
+    margin-top: 30px;
+    padding: 30px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    text-align: left;
+}
+
+.analysis-box h3, .lessons-box h3 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.analysis-box p {
+    font-size: 1.1em;
+    line-height: 1.8;
+}
+
+.lessons-box ul {
+    line-height: 2;
+    margin-left: 20px;
+}
+
+.lessons-box li {
+    margin-bottom: 8px;
+}
+
+/* Utilitários */
+.hidden {
+    display: none;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .header p {
+        font-size: 1em;
+    }
+    
+    .stats-bar {
+        padding: 15px 20px;
+    }
+    
+    .stat-value {
+        font-size: 1.5em;
+    }
+    
+    .content {
+        padding: 20px;
+    }
+    
+    .case-card {
+        padding: 20px;
+    }
+    
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .evaluation-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .case-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
+    .header h1 {
+        font-size: 1.5em;
+    }
+    
+    .btn {
+        padding: 12px 30px;
+        font-size: 1em;
+    }
+}
